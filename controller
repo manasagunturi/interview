@@ -1,0 +1,41 @@
+const express=require('express');
+const router=express.Router();
+const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
+const jwt=require('jsonwebtoken');
+const config=require('../config')
+const user=require('../model/loginSchema.js')
+const db=require('../db.js')
+
+router.use(bodyParser.urlencoded({extended:true}))
+router.use(bodyParser.json())
+// mongoose.connect('mongodb://127.0.0.1:27017/myapp');
+
+
+// db.connect('/users',(err,data)=>{
+//     if(err) throw err;
+//     console.log(data)
+// })
+
+router.post('/register',async(req,res)=>{
+    console.log("ooo")
+    let hashPassword=bcrypt.hashSync(req.params.password,8);
+    let response=user.create({
+        firstName:req.params.firstName,
+        lastName:req.params.lastName,
+        email:req.params.email,
+        password:hashPassword,
+        rePassword:req.params.rePassword,
+    })
+res.send("response",response)
+    // res.status(200).send('Registration Successful')
+})
+router.get('/users',async(req,res)=>{
+    console.log("data",req.body)
+    let output=await user.find()
+    console.log(">>>output",output)
+    res.send(output)
+})
+
+
+module.exports=router;
